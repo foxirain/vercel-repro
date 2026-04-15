@@ -2,33 +2,24 @@ import fs from 'fs';
 import path from 'path';
 
 export default function handler(req, res) {
-  const hostPath = path.join(process.cwd(), 'host');
-  const candidate = path.join(hostPath, 'hosts');
+  const candidate = path.join(process.cwd(), 'hostfile');
 
   const out = {
     cwd: process.cwd(),
-    hostPath,
     candidate,
-    hostExists: fs.existsSync(hostPath),
     candidateExists: fs.existsSync(candidate),
   };
 
   try {
-    const st = fs.lstatSync(hostPath);
-    out.hostLstat = {
+    const st = fs.lstatSync(candidate);
+    out.candidateLstat = {
       isSymbolicLink: st.isSymbolicLink(),
       isDirectory: st.isDirectory(),
       mode: st.mode,
     };
-    if (st.isSymbolicLink()) out.hostTarget = fs.readlinkSync(hostPath);
+    if (st.isSymbolicLink()) out.candidateTarget = fs.readlinkSync(candidate);
   } catch (e) {
-    out.hostError = e && typeof e === 'object' ? e.code || e.message : String(e);
-  }
-
-  try {
-    out.hostEntries = fs.readdirSync(hostPath).slice(0, 20);
-  } catch (e) {
-    out.readdirError = e && typeof e === 'object' ? e.code || e.message : String(e);
+    out.candidateStatError = e && typeof e === 'object' ? e.code || e.message : String(e);
   }
 
   try {
