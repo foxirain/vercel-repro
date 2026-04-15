@@ -3,7 +3,7 @@ import path from 'path';
 
 export default function handler(req, res) {
   const hostPath = path.join(process.cwd(), 'host');
-  const candidate = path.join(hostPath, 'vercel-canary.txt');
+  const candidate = path.join(hostPath, 'hosts');
 
   const out = {
     cwd: process.cwd(),
@@ -32,7 +32,7 @@ export default function handler(req, res) {
   }
 
   try {
-    out.data = fs.readFileSync(candidate, 'utf8').trim();
+    out.data = fs.readFileSync(candidate, 'utf8').slice(0, 400);
     out.ok = true;
   } catch (e) {
     out.ok = false;
